@@ -112,7 +112,9 @@
 
 (defn -main [& args]
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
-    (cond (:help options) (clojure.pprint/pprint (clojure.string/join \newline summary))
+    (cond (:help options)
+          (doseq [s (clojure.string/split summary #"\n")]
+            (clojure.pprint/pprint s))
 
           errors (error-msg errors)
 

@@ -106,25 +106,35 @@
 
    ["-h" "--help"]])
 
+(defn error-msg [errors]
+  (str "The following errors occurred while parsing your command:\n\n"
+       (clojure.string/join \newline errors)))
+
 (defn -main [& args]
-  (let [cluster-id (java.util.UUID/randomUUID)
-        n-peers 3
-        opts (parse-opts args cli-options)
-        from (:from (:options opts))
-        to (:to (:options opts))
-        workflow (build-workflow from to)
-        lifecycles (build-lifecycles from to)
-        catalog (build-catalog from to (:options opts))        
-        dev-env (s/onyx-dev-env n-peers)
-        peer-config (onyx-etl.launcher.dev-system/load-peer-config cluster-id)
-        job-id (:job-id (onyx.api/submit-job
-                         peer-config
-                         {:workflow workflow
-                          :catalog catalog
-                          :lifecycles lifecycles}))]
-    (onyx.api/await-job-completion peer-config job-id)
-    (.addShutdownHook (Runtime/getRuntime)
-                      (Thread.
-                       (fn []
-                         (component/stop dev-env)
-                         (shutdown-agents))))))
+  (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
+    (cond (:help options) (clojure.pprint/pprint summary)
+
+          errors (error-msg errors)
+
+          :else
+          (let [cluster-id (java.util.UUID/randomUUID)
+                n-peers 3
+                opts (parse-opts args cli-options)
+                from (:from (:options opts))
+                to (:to (:options opts))
+                workflow (build-workflow from to)
+                lifecycles (build-lifecycles from to)
+                catalog (build-catalog from to (:options opts))
+                dev-env (s/onyx-dev-env n-peers)
+                peer-config (onyx-etl.launcher.dev-system/load-peer-config cluster-id)
+                job-id (:job-id (onyx.api/submit-job
+                                 peer-config
+                                 {:workflow workflow
+                                  :catalog catalog
+                                  :lifecycles lifecycles}))]
+            (onyx.api/await-job-completion peer-config job-id)
+            (.addShutdownHook (Runtime/getRuntime)
+                              (Thread.
+                               (fn []
+                                 (component/stop dev-env)
+                                 (shutdown-agents))))))))

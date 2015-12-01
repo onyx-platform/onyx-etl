@@ -1,6 +1,6 @@
 # onyx-etl
 
-Onyx convenience application for moving data between storage mediums. ** Work in progress.**
+Onyx convenience application for moving data between storage mediums. **Work in progress.**
 
 ## Usage
 

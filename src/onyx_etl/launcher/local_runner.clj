@@ -114,7 +114,7 @@
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
     (cond (:help options)
           (doseq [s (clojure.string/split summary #"\n")]
-            (clojure.pprint/pprint s))
+            (println s))
 
           errors (error-msg errors)
 

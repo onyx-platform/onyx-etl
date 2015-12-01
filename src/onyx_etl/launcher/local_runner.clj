@@ -11,6 +11,64 @@
             [onyx-etl.workflows.sql-to-datomic]
             [onyx.api]))
 
+(defn build-workflow [from to]
+  (cond (and (= from :sql) (= to :datomic))
+        onyx-etl.workflows.sql-to-datomic/sql-to-datomic-workflow
+
+        :else
+        (throw (ex-info (format "onyx-etl doesn't know how to move data from %s to %s."
+                                from to)
+                        {:from from :to to}))))
+
+(defn find-input-lifecycles [medium]
+  (cond (= medium :sql)
+        (onyx-etl.lifecycles.sql-lifecycles/sql-reader-entries)
+
+        :else
+        (throw (ex-info (format "onyx-etl doesn't have input lifecycles for %s" medium) {:medium medium}))))
+
+(defn find-output-lifecycles [medium]
+  (cond (= medium :datomic)
+        (onyx-etl.lifecycles.datomic-lifecycles/datomic-bulk-writer-entries)
+
+        :else
+        (throw (ex-info (format "onyx-etl doesn't have output lifecycles for %s" medium) {:medium medium}))))
+
+(defn find-input-catalog-entries [medium opts]
+  (cond (= medium :sql)
+        (onyx-etl.catalogs.sql-catalog/sql-input-entries
+         (:jdbc-spec opts)
+         (:sql-table opts)
+         (:sql-id-column opts)
+         (:sql-rows-per-segment opts)
+         (:input-batch-size opts))
+
+        :else
+        (throw (ex-info (format "onyx-etl doesn't have input catalog entries for %s" medium) {:medium medium}))))
+
+(defn find-output-catalog-entries [medium opts]
+  (cond (= medium :datomic)
+        (let [key-map (read-string (slurp (clojure.java.io/resource (:datomic-key-file opts))))]
+          (onyx-etl.catalogs.datomic-catalog/datomic-output-entries
+           (:datomic-uri opts)
+           (:datomic-partition opts)
+           key-map
+           (:function-batch-size opts)
+           (:output-batch-size opts)))
+
+        :else
+        (throw (ex-info (format "onyx-etl doesn't have output catalog entries for %s" medium) {:medium medium}))))
+
+(defn build-lifecycles [from to]
+  (let [inputs (find-input-lifecycles from)
+        outputs (find-output-lifecycles to)]
+    (concat inputs outputs)))
+
+(defn build-catalog [from to opts]
+  (let [inputs (find-input-catalog-entries from opts)
+        outputs (find-output-catalog-entries to opts)]
+    (concat inputs outputs)))
+
 (def cli-options
   [["-f" "--from <medium>" "Input storage medium"
     :parse-fn #(keyword %)
@@ -19,6 +77,18 @@
    ["-t" "--to <medium>" "Output storage medium"
     :parse-fn #(keyword %)
     :validate [#(some #{%} #{:datomic}) "Must be one of #{:datomic}"]]
+
+   [nil "--input-batch-size <n>" "Batch size of the input task"
+    :parse-fn #(Integer/parseInt %)
+    :validate [pos? "Must be a positive integer"]]
+
+   [nil "--transform-batch-size <n>" "Batch size of the transformation task"
+    :parse-fn #(Integer/parseInt %)
+    :validate [pos? "Must be a positive integer"]]
+
+   [nil "--output-batch-size <n>" "Batch size of the output task"
+    :parse-fn #(Integer/parseInt %)
+    :validate [pos? "Must be a positive integer"]]
 
    [nil "--datomic-uri <uri>" "Datomic URI"]
    [nil "--datomic-partition <part>" "Datomic partition to use"]
@@ -39,6 +109,12 @@
 (defn -main [& args]
   (let [cluster-id (java.util.UUID/randomUUID)
         n-peers 3
+        opts (parse-opts args cli-options)
+        from (:from (:options opts))
+        to (:to (:options opts))
+        workflow (build-workflow from to)
+        lifecycles (build-lifecycles from to)
+        catalog (build-catalog from to (:options opts))        
         dev-env (s/onyx-dev-env n-peers)]
     (.addShutdownHook (Runtime/getRuntime)
                       (Thread.

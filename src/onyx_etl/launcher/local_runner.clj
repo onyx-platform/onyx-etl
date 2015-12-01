@@ -115,7 +115,14 @@
         workflow (build-workflow from to)
         lifecycles (build-lifecycles from to)
         catalog (build-catalog from to (:options opts))        
-        dev-env (s/onyx-dev-env n-peers)]
+        dev-env (s/onyx-dev-env n-peers)
+        peer-config (onyx-etl.launcher.dev-system/load-peer-config cluster-id)
+        job-id (:job-id (onyx.api/submit-job
+                         peer-config
+                         {:workflow workflow
+                          :catalog catalog
+                          :lifecycles lifecycles}))]
+    (onyx.api/await-job-completion peer-config job-id)
     (.addShutdownHook (Runtime/getRuntime)
                       (Thread.
                        (fn []

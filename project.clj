@@ -8,8 +8,9 @@
                  [org.onyxplatform/onyx "0.8.2"]
                  [org.onyxplatform/onyx-datomic "0.8.2.4"]
                  [org.onyxplatform/onyx-sql "0.8.2.1"]
-                 [com.datomic/datomic-free "0.9.5327" :exclusions [joda-time]]]
-  :profiles {:uberjar {:aot [onyx-etl.launcher.aeron-media-driver
-                             onyx-etl.launcher.launch-prod-peers]}
+                 [com.datomic/datomic-free "0.9.5327" :exclusions [joda-time]]
+                 [mysql/mysql-connector-java "5.1.27"]]
+  :profiles {:uberjar {:aot :all
+                       :main onyx-etl.launcher.local-runner}
              :dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]]
                    :source-paths ["env/dev" "src"]}})

@@ -11,7 +11,8 @@
             [onyx-etl.workflows.sql-to-datomic]
             [onyx.plugin.datomic]
             [onyx.plugin.sql]
-            [onyx.api]))
+            [onyx.api])
+  (:gen-class))
 
 (def default-batch-size 20)
 
@@ -41,14 +42,6 @@
   [from to]
   onyx-etl.workflows.sql-to-datomic/sql-to-datomic-workflow)
 
-(defmethod find-input-lifecycles :sql
-  [medium]
-  (onyx-etl.lifecycles.sql-lifecycles/sql-reader-entries))
-
-(defmethod find-output-lifecycles :datomic
-  [medium]
-  (onyx-etl.lifecycles.datomic-lifecycles/datomic-bulk-writer-entries))
-
 (defmethod find-input-catalog-entries :sql
   [medium opts]
   (onyx-etl.catalogs.sql-catalog/sql-input-entries
@@ -72,6 +65,14 @@
        key-map
        (:transform-batch-size opts)
        (:output-batch-size opts)))))
+
+(defmethod find-input-lifecycles :sql
+  [medium]
+  (onyx-etl.lifecycles.sql-lifecycles/sql-reader-entries))
+
+(defmethod find-output-lifecycles :datomic
+  [medium]
+  (onyx-etl.lifecycles.datomic-lifecycles/datomic-bulk-writer-entries))
 
 (defmethod build-workflow :default
   [from to])
@@ -117,7 +118,7 @@
    [nil "--datomic-uri <uri>" "Datomic URI"]
    [nil "--datomic-partition <part>" "Datomic partition to use"
     :parse-fn #(keyword %)]
-   [nil "--datomic-key-file <file>" "Absolute or relative path to a Datomic key transformation file. See this project's README.md."]
+   [nil "--datomic-key-file <file>" "Absolute or relative path to a Datomic transformation file. See the project README for the spec."]
 
    [nil "--sql-classname <JDBC classname>" "The SQL JDBC spec classname"]
    [nil "--sql-subprotocol <JDBC subprotocol>" "The SQL JDBC spec subprotocol"]
@@ -139,7 +140,7 @@
        (clojure.string/join \newline errors)))
 
 (defn -main [& args]
-  (let [{:keys [options arguments errors summary] :as xx} (parse-opts args cli-options)]
+  (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
     (cond (:help options)
           (doseq [s (clojure.string/split summary #"\n")]
             (println s))
@@ -181,11 +182,6 @@
               (println (format "onyx-etl doesn't have output lifecycles for %s" to))
               (System/exit 1))
 
-            (clojure.pprint/pprint {:workflow workflow
-                                    :catalog catalog
-                                    :lifecycles lifecycles
-                                    :task-scheduler :onyx.task-scheduler/balanced})
-
             (let [dev-env (component/start (s/onyx-dev-env n-peers))
                   peer-config (onyx-etl.launcher.dev-system/load-peer-config (:onyx-id dev-env))
                   job-id (:job-id (onyx.api/submit-job
@@ -195,8 +191,6 @@
                                     :lifecycles lifecycles
                                     :task-scheduler :onyx.task-scheduler/balanced}))]
               (onyx.api/await-job-completion peer-config job-id)
-              (.addShutdownHook (Runtime/getRuntime)
-                                (Thread.
-                                 (fn []
-                                   (component/stop dev-env)
-                                   (shutdown-agents)))))))))
+              (println "Data transfer complete.")
+              (component/stop dev-env)
+              (shutdown-agents))))))

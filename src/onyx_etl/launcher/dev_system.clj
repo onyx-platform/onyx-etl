@@ -33,7 +33,7 @@
   component/Lifecycle
 
   (start [component]
-    (println "Starting Onyx development environment")
+    (println "Starting Onyx local environment...")
     (let [onyx-id (java.util.UUID/randomUUID)
           env-config (load-env-config onyx-id)
           peer-config (load-peer-config onyx-id)
@@ -44,7 +44,7 @@
              :peers peers :onyx-id onyx-id)))
 
   (stop [component]
-    (println "Stopping Onyx development environment")
+    (println "Stopping Onyx local environment...")
 
     (doseq [v-peer (:peers component)]
       (try

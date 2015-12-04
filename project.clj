@@ -11,6 +11,7 @@
                  [com.datomic/datomic-free "0.9.5327" :exclusions [joda-time]]
                  [mysql/mysql-connector-java "5.1.27"]]
   :profiles {:uberjar {:aot :all
-                       :main onyx-etl.launcher.local-runner}
+                       :main onyx-etl.launcher.local-runner
+                       :uberjar-name "onyx-etl-standalone.jar"}
              :dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]]
                    :source-paths ["env/dev" "src"]}})

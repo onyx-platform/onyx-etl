@@ -4,7 +4,18 @@ Onyx convenience application for moving data between storage mediums. **Work in 
 
 ## Usage
 
-<< Fill me in >>
+You can run onyx-etl in a variety of modes. We'll describe each below.
+
+### From Source
+
+Clone this repository, build an uberjar, then start playing:
+
+```text
+$ git clone git@github.com:onyx-platform/onyx-etl.git
+$ cd onyx-etl
+$ lein uberjar
+$ java -jar target/onyx-etl-standalone.jar --help
+```
 
 ### Datomic Specifics
 

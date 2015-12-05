@@ -1,21 +1,16 @@
 # {{app-name}}
 
-Onyx convenience application for moving data between storage mediums. **Work in progress.**
+Onyx convenience application for moving data between storage mediums.
 
 ## Usage
 
-You can run {{app-name}} in a variety of modes. We'll describe each below.
-
-### From Source
-
-Clone this repository, build an uberjar, then start playing:
+First, check the help menu to see all of the options:
 
 ```text
-$ git clone git@github.com:onyx-platform/onyx-etl.git
-$ cd onyx-etl
-$ lein uberjar
-$ java -jar target/onyx-etl-standalone.jar --help
+lein run {{app-name}}.launcher.local-runner --help
 ```
+
+Then proceed to read the rest of the documentation below.
 
 ## Examples
 
@@ -63,7 +58,7 @@ And our Datomic schema looks like this:
 Then our command to move and transform the data might look like:
 
 ```text
-$ java -jar target/onyx-etl-standalone.jar --from sql --to datomic --datomic-uri datomic:free://localhost:4334/my-db-name --datomic-partition com.excellent/person --datomic-key-file datomic-keys.edn --sql-classname com.mysql.jdbc.Driver --sql-subprotocol mysql --sql-subname //127.0.0.1:3306/onyx_example --sql-user sql-user --sql-password sql-password --sql-table people --sql-id-column id
+$ lein run -m {{app-name}}.launcher.local-runner --from sql --to datomic --datomic-uri datomic:free://localhost:4334/my-db-name --datomic-partition com.excellent/person --datomic-key-file datomic-keys.edn --sql-classname com.mysql.jdbc.Driver --sql-subprotocol mysql --sql-subname //127.0.0.1:3306/onyx_example --sql-user sql-user --sql-password sql-password --sql-table people --sql-id-column id
 ```
 
 Where the content of `datomic-keys.edn` is:

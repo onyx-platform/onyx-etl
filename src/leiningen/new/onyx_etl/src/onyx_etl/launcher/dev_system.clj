@@ -1,4 +1,4 @@
-(ns onyx-etl.launcher.dev-system
+(ns {{app-name}}.launcher.dev-system
   (:require [clojure.core.async :refer [chan <!!]]
             [clojure.java.io :refer [resource]]
             [com.stuartsierra.component :as component]

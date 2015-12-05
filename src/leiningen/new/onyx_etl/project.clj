@@ -8,7 +8,7 @@
                  [org.onyxplatform/onyx "0.8.2"]
                  [org.onyxplatform/onyx-datomic "0.8.2.4"]
                  [org.onyxplatform/onyx-sql "0.8.2.1"]
-                 [org.onyxplatform/onyx-etl-support "0.8.2.0-SNAPSHOT"]
+                 [org.onyxplatform/onyx-etl-support "0.8.2.0"]
                  [com.datomic/datomic-free "0.9.5327" :exclusions [joda-time]]
                  [mysql/mysql-connector-java "5.1.27"]]
   :profiles {:uberjar {:aot :all

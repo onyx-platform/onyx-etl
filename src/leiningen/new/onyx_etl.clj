@@ -16,8 +16,8 @@
 
 (defn render-files [files name data]
   (mapv (juxt (fn [path]
-                (let [name* (clojure.string/replace name #"-" "_")]
-                  (clojure.string/replace path #"onyx_etl" name*)))
+                (let [sanitized-name (clojure.string/replace name #"-" "_")]
+                  (clojure.string/replace path #"onyx_etl" sanitized-name)))
               (fn [file-path] (render file-path data)))
         files))
 
@@ -27,6 +27,7 @@
   (let [path (name-to-path name)
         onyx-version "0.8.2"
         data {:name name
+              :underscored-name (clojure.string/replace name #"-" "_")
               :onyx-version onyx-version
               :app-name name
               :sanitized path}

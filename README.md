@@ -1,14 +1,18 @@
 # onyx-etl
 
-A Leiningen template for FIXME.
+A Leiningen template for generating Onyx extract, transform, load jobs.
 
 ## Usage
 
-FIXME
+Get started with:
+
+```clojure
+lein new onyx-etl my-cool-app-name
+```
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2015 Distributed Masonry LLC
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

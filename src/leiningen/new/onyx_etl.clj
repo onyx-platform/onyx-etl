@@ -7,17 +7,19 @@
 (def files
   ["LICENSE"
    "README.md"
-   "env-config.edn"
-   "peer-config.edn"
-   "user.clj"
+   "resources/env-config.edn"
+   "resources/peer-config.edn"
+   "env/dev/user.clj"
    "project.clj"
-   "dev_system.clj"
-   "local_runner.clj"])
+   "src/onyx_etl/launcher/dev_system.clj"
+   "src/onyx_etl/launcher/local_runner.clj"])
 
 (defn render-files [files name data]
-  (mapv (juxt (fn [path] (clojure.string/replace path #"onyx_etl" name))
+  (mapv (juxt (fn [path]
+                (let [name* (clojure.string/replace name #"-" "_")]
+                  (clojure.string/replace path #"onyx_etl" name*)))
               (fn [file-path] (render file-path data)))
-               files))
+        files))
 
 (defn onyx-etl
   "Creates a new onyx-etl application template"

@@ -1,7 +1,7 @@
 (ns user
   (:require [clojure.tools.namespace.repl :refer [refresh set-refresh-dirs]]
             [com.stuartsierra.component :as component]
-            [onyx-etl.launcher.dev-system :refer [onyx-dev-env]]))
+            [{{app-name}}.launcher.dev-system :refer [onyx-dev-env]]))
 
 (set-refresh-dirs "src" "test")
 

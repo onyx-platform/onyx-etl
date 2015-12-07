@@ -1,6 +1,6 @@
 # {{app-name}}
 
-Onyx convenience application for moving data between storage mediums.
+Onyx convenience application for moving data between storage mediums. You can use this application to run prewritten Onyx jobs, or generate custom Onyx jobs from scratch.
 
 ## Usage
 
@@ -10,7 +10,7 @@ First, check the help menu to see all of the options:
 lein run {{app-name}}.launcher.local-runner --help
 ```
 
-Then proceed to read the rest of the documentation below.
+Then proceed to read the rest of the documentation below. When you find that the prewritten Onyx job isn't as expressive as you need, generate your Onyx job with `--job-file my_job.clj`. You can read more about code generation below, but it's worth calling out early in the README.
 
 ## Examples
 
@@ -114,6 +114,14 @@ An example Datomic key file would contain:
 ```clojure
 {:web-event/event-time :occurence
  :web-event/duration :duration}
+```
+
+### Code Generation
+
+Eventually, using the canned Onyx jobs that we've written aren't going to be enough for your use case. You might want to do some extra type casting, data transformations, and so on. We've made it easy to transition from prewritten job to generated Onyx code. You can drop into a fully written Onyx program by adding `--job-file <my_job.clj>` to your command line switches. This will take all of the Onyx code that would have executed and constructs a fully valid namespace for you to use additional Onyx features. Using this switch would look like:
+
+```text
+$ lein run -m {{app-name}}.launcher.local-runner --from sql --to datomic <more options here> --job-file my_onyx_job.clj
 ```
 
 ## License

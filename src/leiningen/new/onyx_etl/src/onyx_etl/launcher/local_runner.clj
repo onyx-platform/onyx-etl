@@ -1,6 +1,7 @@
 (ns {{app-name}}.launcher.local-runner
   (:require [com.stuartsierra.component :as component]
             [onyx-etl-support.core :refer [parse-cli-opts write-to-ns]]
+            [onyx-etl-support.functions.transformers] 
             [{{app-name}}.launcher.dev-system :as s]
             [onyx.plugin.datomic]
             [onyx.plugin.sql]

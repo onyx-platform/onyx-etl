@@ -7,7 +7,7 @@ Onyx convenience application for moving data between storage mediums. You can us
 First, check the help menu to see all of the options:
 
 ```text
-lein run {{app-name}}.launcher.local-runner --help
+lein run -m {{app-name}}.launcher.local-runner --help
 ```
 
 Then proceed to read the rest of the documentation below. When you find that the prewritten Onyx job isn't as expressive as you need, generate your Onyx job with `--job-file my_job.clj`. You can read more about code generation below, but it's worth calling out early in the README.

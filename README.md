@@ -1,5 +1,7 @@
 # onyx-etl
 
+**Note: this project is not actively maintained.**
+
 A Leiningen template for generating Onyx extract, transform, load jobs.
 
 ## Usage
